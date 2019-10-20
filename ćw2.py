@@ -1,3 +1,5 @@
+import file_manager
+
 def lacz (a, b):
     c=[]
     for i in range(len(a)):
@@ -65,5 +67,15 @@ class ScienceCalculator(Calculator):
 def tyl(tekst):
     print(tekst[::-1])
 
+
+
+plik = file_manager.FileManager("pliczek.txt")
+print("Przed edycja:\n")
+plik.read_file()
+plik.update_file()
+plik.zamknij()
+krowa = file_manager.FileManager("pliczek.txt")
+print("Po edycji:\n")
+krowa.read_file()
 
 
