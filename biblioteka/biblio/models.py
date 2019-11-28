@@ -13,6 +13,9 @@ class gatunek(models.Model):
     ]
     nazwa = models.CharField(max_length=30, choices=gatunekWybor, default='DRAMAT')
 
+    def __str__(self):
+        return '%s' '%s' % (self.idGatunek, self.nazwa)
+
 class rezyser(models.Model):
     idRezyser = models.AutoField(primary_key=True)
     imie = models.CharField(max_length=25, null=False)
@@ -30,6 +33,9 @@ class rezyser(models.Model):
     pochodzenie = models.CharField(max_length=25, choices=pochodzenieWybor, default='POLSKA')
     dataUrodzenia = models.DateField()
 
+    def __str__(self):
+        return '%s' '%s' '%s' '%s' '%s' % (self.idRezyser, self.imie, self.nazwisko, self.pochodzenie, self.dataUrodzenia)
+
 class aktor(models.Model):
     idAktor = models.AutoField(primary_key=True)
     imie = models.CharField(max_length=25, null=False)
@@ -46,11 +52,13 @@ class aktor(models.Model):
     ]
     pochodzenie = models.CharField(max_length=25, choices=pochodzenieWybor, default='POLSKA')
     dataUrodzenia = models.DateField()
+    def __str__(self):
+        return '%s' '%s' '%s' '%s' '%s' % (self.idAktor, self.imie, self.nazwisko, self.pochodzenie, self.dataUrodzenia)
 
 class film(models.Model):
     idFilm = models.AutoField(primary_key=True)
-    idRezyser = models.ForeignKey(rezyser)
-    idGatunku = models.ForeignKey(gatunek)
+    idRezyser = models.ForeignKey(rezyser, on_delete=models.CASCADE)
+    idGatunku = models.ForeignKey(gatunek, on_delete=models.CASCADE)
     tytul = models.CharField(max_length=25, null=False)
     dataWydania = models.DateField()
     ocenaWybor = [
@@ -68,10 +76,19 @@ class film(models.Model):
     ocena = models.CharField(max_length=20, choices=ocenaWybor, default='JEDEN')
     fabula = models.CharField(max_length=200)
 
+    def __str__(self):
+        return '%s' '%s' '%s' '%s' '%s' '%s' '%s' % (self.idFilm, self.idRezyser, self.idGatunku, self.tytul, self.dataWydania, self.ocena, self.fabula)
+
 class filmaktor(models.Model):
-    idFilm = models.ForeignKey(film)
-    idAktor = models.ForeignKey(aktor)
+    idFilm = models.ForeignKey(film, on_delete=models.CASCADE)
+    idAktor = models.ForeignKey(aktor, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "%s %s " % (self.idFilm, self.idAktor)
 
 class filmgatunek(models.Model):
-    idFilm = models.ForeignKey(film)
-    idGatunek = models.ForeignKey(gatunek)
+    idFilm = models.ForeignKey(film, on_delete=models.CASCADE)
+    idGatunek = models.ForeignKey(gatunek, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "%s %s" % (self.idFilm, self.idGatunek)
