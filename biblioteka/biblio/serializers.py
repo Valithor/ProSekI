@@ -31,3 +31,11 @@ class filmgatunekSerializer(serializers.ModelSerializer):
     class Meta:
         model = filmgatunek
         fields = '__all__'
+
+class PrzepisSerializer(serializers.ModelSerializer):
+    aktor = filmaktorSerializer(read_only=True, many=True)
+    gatunek = filmgatunekSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = film
+        fields = ("idFilm", "idRezyser", "idGatunku", "tytul", "dataWydania", "ocena", "fabula")
