@@ -31,7 +31,3 @@ class filmgatunekSerializer(serializers.ModelSerializer):
     class Meta:
         model = filmgatunek
         fields = '__all__'
-
-class filmSerializer(serializers.ModelSerializer):
-
-
