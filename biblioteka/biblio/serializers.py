@@ -1,26 +1,20 @@
-from .models import *
+from .models import film, aktor, gatunek, rezyser, filmgatunek, filmaktor, filmrezyser
 from rest_framework import serializers
-
-class filmSerialzer(serializers.ModelSerializer):
-    class Meta:
-        model = film
-        fields = '__all__'
-
 
 class aktorSerializer(serializers.ModelSerializer):
     class Meta:
         model = aktor
-        fields = '__all__'
+        fields = ("imie", "nazwisko", "pochodzenie", "dataUrodzenia")
 
 class gatunekSerializer(serializers.ModelSerializer):
     class Meta:
         model = gatunek
-        fields = '__all__'
+        fields = "nazwa"
 
 class rezyserSerializer(serializers.ModelSerializer):
     class Meta:
         model = rezyser
-        fields = '__all__'
+        fields = ("imie", "nazwisko", "pochodzenie", "dataUrodzenia")
 
 class filmaktorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,10 +26,16 @@ class filmgatunekSerializer(serializers.ModelSerializer):
         model = filmgatunek
         fields = '__all__'
 
-class PrzepisSerializer(serializers.ModelSerializer):
+class filmrezyserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = filmrezyser
+        fields = '__all__'
+
+class filmSerializer(serializers.ModelSerializer):
     aktor = filmaktorSerializer(read_only=True, many=True)
     gatunek = filmgatunekSerializer(read_only=True, many=True)
+    rezyser = rezyserSerializer(read_only=True, many=False)
 
     class Meta:
         model = film
-        fields = ("idFilm", "idRezyser", "idGatunku", "tytul", "dataWydania", "ocena", "fabula")
+        fields = ("tytul", "aktor", "gatunek", "dataWydania", "ocena", "fabula")
