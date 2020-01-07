@@ -33,7 +33,7 @@ class filmrezyserSerializer(serializers.ModelSerializer):
 
 class filmSerializer(serializers.ModelSerializer):
     aktor = filmaktorSerializer(read_only=True, many=True)
-    gatunek = filmgatunekSerializer(read_only=True, many=True)
+    gatunek = gatunekSerializer(read_only=True, many=False)
     rezyser = rezyserSerializer(read_only=True, many=False)
 
     class Meta:

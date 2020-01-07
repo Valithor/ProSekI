@@ -55,10 +55,10 @@ class aktor(models.Model):
 
 class film(models.Model):
     tytul = models.CharField(max_length=25)
-    rezyser = models.ManyToManyField(rezyser, through="filmrezyser")
     dataWydania = models.DateField()
     gatunek = models.ManyToManyField(gatunek, through='filmgatunek')
     aktor = models.ManyToManyField(aktor, through='filmaktor')
+    rezyser = models.ManyToManyField(rezyser, through='filmrezyser')
     ocenaWybor = [
         ('JEDEN', '1'),
         ('DWA', '2'),
@@ -75,12 +75,11 @@ class film(models.Model):
     fabula = models.CharField(max_length=200)
 
     def __str__(self):
-        return '%s %s %s %s %s %s %s' % (self.tytul, self.rezyser, self.aktor, self.gatunek, self.dataWydania, self.ocena, self.fabula)
+        return '%s %s %s %s %s %s' % (self.tytul, self.aktor, self.gatunek, self.dataWydania, self.ocena, self.fabula)
 
 class filmaktor(models.Model):
     idFilm = models.ForeignKey(film, on_delete=models.CASCADE)
     idAktor = models.ForeignKey(aktor, on_delete=models.CASCADE)
-    ilosc = models.CharField(max_length=45)
 
     def __str__(self):
         return "%s %s " % (self.idFilm, self.idAktor)
@@ -88,7 +87,6 @@ class filmaktor(models.Model):
 class filmgatunek(models.Model):
     idFilm = models.ForeignKey(film, on_delete=models.CASCADE)
     idGatunek = models.ForeignKey(gatunek, on_delete=models.CASCADE)
-    ilosc = models.CharField(max_length=45)
 
     def __str__(self):
         return "%s %s" % (self.idFilm, self.idGatunek)
@@ -96,7 +94,6 @@ class filmgatunek(models.Model):
 class filmrezyser(models.Model):
     idFilm = models.ForeignKey(film, on_delete=models.CASCADE)
     idRezyser = models.ForeignKey(rezyser, on_delete=models.CASCADE)
-    ilosc = models.CharField(max_length=45)
 
     def __str__(self):
         return "%s %s" % (self.idFilm, self.idRezyser)
@@ -105,15 +102,14 @@ class filmaktorInline(admin.TabularInline):
     model = filmaktor
     extra = 1
 
-class filmrezyserInline(admin.TabularInline):
-    model = filmaktor
-    extra = 1
-
 
 class filmgatunekInline(admin.TabularInline):
     model = filmgatunek
     extra = 1
 
+class filmrezyserInline(admin.TabularInline):
+    model = filmrezyser
+    extra = 1
 
 class filmAdmin(admin.ModelAdmin):
-    inlines = (filmaktorInline, filmgatunekInline, filmrezyserInline,)
+    inlines = (filmaktorInline, filmgatunekInline, filmrezyserInline, )
