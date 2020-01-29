@@ -1,41 +1,7 @@
 from django.contrib import admin
 from django.db import models
 
-class gatunek(models.Model):
-    gatunekWybor = [
-        ('DRAMAT', 'dramat'),
-        ('THRILLER', 'thriller'),
-        ('DOKUMENT', 'dokument'),
-        ('AKCJA', 'akcja'),
-        ('HORROR', 'horror'),
-        ('SCIENCE FICTION', 'science fiction'),
-        ('ANIMOWANY', 'animowany'),
-    ]
-    nazwa = models.CharField(max_length=20, choices=gatunekWybor, default='DRAMAT',)
-
-    def __str__(self):
-        return '%s' % self.nazwa
-
-class rezyser(models.Model):
-    imie = models.CharField(max_length=25)
-    nazwisko = models.CharField(max_length=25)
-    pochodzenieWybor = [
-        ('POLSKA', 'Polska'),
-        ('FRANCJA', 'Francja'),
-        ('USA', 'Usa'),
-        ('NIEMCY', 'Niemcy'),
-        ('WIELKA BRYTANIA', 'Wielka Brytania'),
-        ('DANIA', 'Dania'),
-        ('AZJA', 'Azja'),
-        ('INNE', 'Inne'),
-    ]
-    pochodzenie = models.CharField(max_length=25, choices=pochodzenieWybor, default='POLSKA')
-    dataUrodzenia = models.DateField()
-
-    def __str__(self):
-        return '%s %s %s %s' % (self.imie, self.nazwisko, self.pochodzenie, self.dataUrodzenia)
-
-class aktor(models.Model):
+class osoba(models.Model):
     imie = models.CharField(max_length=25)
     nazwisko = models.CharField(max_length=25)
     pochodzenieWybor = [
@@ -54,62 +20,60 @@ class aktor(models.Model):
         return '%s %s %s %s' % (self.imie, self.nazwisko, self.pochodzenie, self.dataUrodzenia)
 
 class film(models.Model):
+    gatunekWybor = [
+        ('DRAMAT', 'dramat'),
+        ('THRILLER', 'thriller'),
+        ('DOKUMENT', 'dokument'),
+        ('AKCJA', 'akcja'),
+        ('HORROR', 'horror'),
+        ('SCIENCE FICTION', 'science fiction'),
+        ('ANIMOWANY', 'animowany'),
+    ]
     tytul = models.CharField(max_length=25)
     dataWydania = models.DateField()
-    gatunek = models.ManyToManyField(gatunek, through='filmgatunek')
-    aktor = models.ManyToManyField(aktor, through='filmaktor')
-    rezyser = models.ManyToManyField(rezyser, through='filmrezyser')
+    gatunek = models.CharField(max_length=20, choices=gatunekWybor, default='DRAMAT',)
+    osoba = models.ManyToManyField(osoba, through='filmosoba')
+    fabula = models.CharField(max_length=200)
+
+    def __str__(self):
+        return '%s %s %s %s %s' % (self.tytul, self.dataWydania, self.gatunek, self.osoba, self.fabula)
+class ocena(models.Model):
     ocenaWybor = [
         ('JEDEN', '1'),
         ('DWA', '2'),
         ('TRZY', '3'),
-        ('CZWARTY', '4'),
+        ('CZTERY', '4'),
         ('PIEC', '5'),
-        ('CZESC', '6'),
+        ('SZESC', '6'),
         ('SIEDEM', '7'),
         ('OSIEM', '8'),
         ('DZIEWIEC', '9'),
         ('DZIESIEC', '10'),
-        ]
+    ]
+    film = models.ForeignKey(film, on_delete=models.CASCADE)
     ocena = models.CharField(max_length=20, choices=ocenaWybor, default='JEDEN')
-    fabula = models.CharField(max_length=200)
+    recenzja = models.CharField(max_length=200)
+    uzytkownik = models.ForeignKey('auth.User', related_name='uzytkownik', blank=True, null=True,
+                                         on_delete=models.SET_NULL)
+    def __str__(self):
+        return '%s %s' % (self.ocena, self.recenzja)
+
+class filmosoba(models.Model):
+    osobaWybor = [
+        ('aktor', 'AKTOR'),
+        ('rezyser', 'REZYSER'),
+    ]
+    Film = models.ForeignKey(film, on_delete=models.CASCADE)
+    Osoba = models.ForeignKey(osoba, on_delete=models.CASCADE)
+    rola = models.CharField(max_length=20, choices=osobaWybor, default='AKTOR')
+
 
     def __str__(self):
-        return '%s %s %s %s %s %s' % (self.tytul, self.aktor, self.gatunek, self.dataWydania, self.ocena, self.fabula)
+        return "%s %s %s" % (self.Film, self.Osoba, self.rola)
 
-class filmaktor(models.Model):
-    idFilm = models.ForeignKey(film, on_delete=models.CASCADE)
-    idAktor = models.ForeignKey(aktor, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "%s %s " % (self.idFilm, self.idAktor)
-
-class filmgatunek(models.Model):
-    idFilm = models.ForeignKey(film, on_delete=models.CASCADE)
-    idGatunek = models.ForeignKey(gatunek, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "%s %s" % (self.idFilm, self.idGatunek)
-
-class filmrezyser(models.Model):
-    idFilm = models.ForeignKey(film, on_delete=models.CASCADE)
-    idRezyser = models.ForeignKey(rezyser, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "%s %s" % (self.idFilm, self.idRezyser)
-
-class filmaktorInline(admin.TabularInline):
-    model = filmaktor
-    extra = 1
-
-
-class filmgatunekInline(admin.TabularInline):
-    model = filmgatunek
-    extra = 1
-
-class filmrezyserInline(admin.TabularInline):
-    model = filmrezyser
+class filmosobaInline(admin.TabularInline):
+    model = filmosoba
     extra = 1
 
 class filmAdmin(admin.ModelAdmin):
-    inlines = (filmaktorInline, filmgatunekInline, filmrezyserInline, )
+    inlines = (filmosobaInline, )

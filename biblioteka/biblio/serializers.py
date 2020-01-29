@@ -1,41 +1,41 @@
-from .models import film, aktor, gatunek, rezyser, filmgatunek, filmaktor, filmrezyser
+from .models import film, osoba, filmosoba, ocena
 from rest_framework import serializers
+from django.contrib.auth.models import User
 
-class aktorSerializer(serializers.ModelSerializer):
+
+class osobaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = aktor
+        model = osoba
         fields = ("imie", "nazwisko", "pochodzenie", "dataUrodzenia")
 
-class gatunekSerializer(serializers.ModelSerializer):
+class ocenaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = gatunek
-        fields = "nazwa"
-
-class rezyserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = rezyser
-        fields = ("imie", "nazwisko", "pochodzenie", "dataUrodzenia")
-
-class filmaktorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = filmaktor
+        model = ocena
         fields = '__all__'
 
-class filmgatunekSerializer(serializers.ModelSerializer):
+class filmosobaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = filmgatunek
-        fields = '__all__'
-
-class filmrezyserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = filmrezyser
+        model = filmosoba
         fields = '__all__'
 
 class filmSerializer(serializers.ModelSerializer):
-    aktor = filmaktorSerializer(read_only=True, many=True)
-    gatunek = gatunekSerializer(read_only=True, many=False)
-    rezyser = rezyserSerializer(read_only=True, many=False)
-
+    osoba = osobaSerializer(read_only=True, many=True)
     class Meta:
         model = film
-        fields = ("tytul", "aktor", "gatunek", "dataWydania", "ocena", "fabula")
+        fields = ["tytul", "dataWydania", "gatunek", "osoba", "fabula"]
+
+class UzytkownikSerializer (serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email']
+
+class ocenaGetSerializer(serializers.ModelSerializer):
+    film = filmSerializer(read_only=True)
+    class Meta:
+        model = ocena
+        fields = ['id','ocena', 'recenzja', 'film']
+
+class ocenaPostUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ocena
+        fields = ['ocena', 'recenzja', 'film']
